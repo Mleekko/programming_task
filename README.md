@@ -1,2 +1,1 @@
-# programming_task
-A programming task
+A programming task for *some company*
