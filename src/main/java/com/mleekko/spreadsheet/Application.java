@@ -5,6 +5,9 @@ import com.mleekko.spreadsheet.ex.CyclicReferenceException;
 public class Application {
 
 
+    /**
+     * For expected inout format see {@link SpreadSheetReader}
+     */
     public static void main(String[] args) {
         try {
             SpreadSheetReader reader = new SpreadSheetReader();
