@@ -2,6 +2,7 @@ group 'com.mleekko.test'
 version '0.1-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
@@ -12,3 +13,5 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+mainClassName = "com.mleekko.spreadsheet.Application"
