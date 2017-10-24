@@ -1,6 +1,5 @@
 package com.mleekko.spreadsheet;
 
-import com.mleekko.spreadsheet.ex.BadException;
 import com.mleekko.spreadsheet.ex.CyclicReferenceException;
 import com.mleekko.spreadsheet.rpn.ExpressionElement;
 import com.mleekko.spreadsheet.rpn.element.CellReference;
@@ -29,7 +28,7 @@ public class Cell {
             throw new CyclicReferenceException("Cyclic reference detected. Chain: " + getCycleChain(resolutionChain, cellName));
         }
 
-        List<ExpressionElement> parsedExpression = sheet.rpn.parseExpression(expression);
+        List<ExpressionElement> parsedExpression = sheet.evaluator.parseExpression(expression);
         for (ExpressionElement element : parsedExpression) {
             if (element.isReference()) {
                 if (element instanceof CellReference) {
@@ -40,13 +39,9 @@ public class Cell {
             }
         }
 
-        value = sheet.rpn.evaluate(parsedExpression);
+        value = sheet.evaluator.evaluate(parsedExpression);
     }
 
-
-    public String getExpression() {
-        return expression;
-    }
 
     public Double getValue() {
         return value;

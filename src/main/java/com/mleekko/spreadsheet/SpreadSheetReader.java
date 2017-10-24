@@ -12,13 +12,10 @@ import java.util.Scanner;
  * line 2 - number of rows    (height M), max 26
  * line 3..NxM+2 - expressions
  */
-// TODO: WHY columns are unlimited (1-N) but only 26 rows ??? @mleekko
 public class SpreadSheetReader {
 
     public SpreadSheet read(InputStream source) {
-        Scanner sc = new Scanner(source);
-
-        try {
+        try (Scanner sc = new Scanner(source)) {
             int width = InputUtil.readInt(sc);
             int height = InputUtil.readInt(sc);
 
@@ -37,8 +34,6 @@ public class SpreadSheetReader {
             }
 
             return spreadsheet;
-        } finally {
-            sc.close();
         }
     }
 

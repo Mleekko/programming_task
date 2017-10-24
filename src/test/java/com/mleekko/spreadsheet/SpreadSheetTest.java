@@ -44,7 +44,7 @@ public class SpreadSheetTest {
         fail("Exception should have been thrown.");
     }
 
-    @Test
+    @Test(expected = CyclicReferenceException.class)
     public void testCyclicReference() throws Exception {
         SpreadSheet sheet = create("" +
                 "2\n" +
@@ -52,18 +52,11 @@ public class SpreadSheetTest {
                 "A2\n" +
                 "A1\n");
 
-        try {
-            sheet.resolve();
-        } catch (CyclicReferenceException e) {
-            // expected
-            return;
-        }
-
-        fail("Exception should have been thrown.");
+        sheet.resolve();
     }
 
-    @Test
-    public void testCyclicReference2() throws Exception {
+    @Test(expected = CyclicReferenceException.class)
+    public void testCyclicReference_3way() throws Exception {
         SpreadSheet sheet = create("" +
                 "1\n" +
                 "4\n" +
@@ -72,14 +65,18 @@ public class SpreadSheetTest {
                 "D1\n" +
                 "B1\n");
 
-        try {
-            sheet.resolve();
-        } catch (CyclicReferenceException e) {
-            // expected
-            return;
-        }
+        sheet.resolve();
+    }
 
-        fail("Exception should have been thrown.");
+    @Test(expected = CyclicReferenceException.class)
+    public void testCyclicReference_selfReference() throws Exception {
+        SpreadSheet sheet = create("" +
+                "1\n" +
+                "2\n" +
+                "100\n" +
+                "B1\n");
+
+        sheet.resolve();
     }
 
     @Test

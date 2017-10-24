@@ -24,14 +24,14 @@ public class CellReference implements ExpressionElement {
 
     public void resolve(SpreadSheet sheet, Set<String> resolutionChain) {
         if (column >= sheet.width) {
-            throw BadException.die("Column number exceeds spreadsheet's bounds: " + CellUtil.coordsToCellName(row, column));
+            throw BadException.die("Column number exceeds spreadsheet's bounds: " + CellUtil.cellReferenceToName(this));
         }
         if (row >= sheet.height) {
-            throw BadException.die("Row exceeds spreadsheet's bounds: " + CellUtil.coordsToCellName(row, column));
+            throw BadException.die("Row exceeds spreadsheet's bounds: " + CellUtil.cellReferenceToName(this));
         }
 
         Cell cell = sheet.getCell(row, column);
-        cell.resolveValue(sheet, resolutionChain, CellUtil.coordsToCellName(column, row));
+        cell.resolveValue(sheet, resolutionChain, CellUtil.cellReferenceToName(this));
 
         value = cell.getValue();
     }

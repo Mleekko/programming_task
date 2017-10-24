@@ -1,7 +1,7 @@
 package com.mleekko.spreadsheet;
 
 import com.mleekko.spreadsheet.ex.BadException;
-import com.mleekko.spreadsheet.rpn.RPN;
+import com.mleekko.spreadsheet.rpn.ExpressionEvaluator;
 import com.mleekko.spreadsheet.util.CellUtil;
 
 import java.util.*;
@@ -9,11 +9,11 @@ import java.util.*;
 public class SpreadSheet {
 
 
-    public final RPN rpn = new RPN();
+    public final ExpressionEvaluator evaluator = new ExpressionEvaluator();
     public final int width;
     public final int height;
 
-    private Cell[][] cells;
+    private final Cell[][] cells;
 
 
     public SpreadSheet(int width, int height) {
@@ -39,7 +39,7 @@ public class SpreadSheet {
         for (int m = 0; m < cells.length; m++) {
             Cell[] row = cells[m];
             for (int n = 0; n < row.length; n++) {
-                Cell cell = getCell(m,n);
+                Cell cell = getCell(m, n);
 
                 if (cell.getValue() == null) {
                     Set<String> resolutionChain = new LinkedHashSet<>();
@@ -49,7 +49,6 @@ public class SpreadSheet {
             }
         }
     }
-
 
 
     public String asString() {
@@ -73,14 +72,12 @@ public class SpreadSheet {
     }
 
 
-
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < cells.length; i++) {
-            sb.append(Arrays.toString(cells[i])).append('\n');
+        for (Cell[] cell : cells) {
+            sb.append(Arrays.toString(cell)).append('\n');
         }
 
         return sb.toString();
