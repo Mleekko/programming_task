@@ -1,15 +1,20 @@
 package com.mleekko.spreadsheet.rpn;
 
-import com.mleekko.spreadsheet.rpn.operators.DivideOperator;
+import com.mleekko.spreadsheet.ex.BadException;
+import com.mleekko.spreadsheet.rpn.element.CellReference;
+import com.mleekko.spreadsheet.rpn.element.Constant;
 import com.mleekko.spreadsheet.rpn.operators.MinusOperator;
+import com.mleekko.spreadsheet.rpn.operators.DivideOperator;
 import com.mleekko.spreadsheet.rpn.operators.MultiplyOperator;
 import com.mleekko.spreadsheet.rpn.operators.PlusOperator;
+import com.mleekko.spreadsheet.util.CellUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ *  Reverse Polish notation (RPN) expression evaluator.
+ */
 public class RPN {
 
     private static final Pattern SPACES = Pattern.compile("\\s+");
@@ -23,36 +28,55 @@ public class RPN {
         operators.put("/", new DivideOperator());
     }
 
-    public double resolve(String expression) {
-        Stack<Double> stack = new Stack<>();
-
+    public List<ExpressionElement> parseExpression(String expression) {
         String[] args = SPACES.split(expression.trim());
 
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+        List<ExpressionElement> elements = new ArrayList<>(args.length);
 
-            try {
-                // if it is a number - push to stack
-                Integer operand = Integer.parseInt(arg);
-                stack.push(operand.doubleValue());
-            } catch (IllegalArgumentException e) {
-                // it's an operator - resolve
-
-                Operator operator = operators.get(arg);
-
-                if (operator == null) {
-                    throw new RuntimeException("Unsupported operator: `" + arg + "`. Should be one of: " + operators.keySet());
+        for (String arg : args) {
+            // check if it is an operator
+            Operator operator = operators.get(arg);
+            if (operator != null) {
+                elements.add(operator);
+            } else {
+                try {
+                    // try if it is a number
+                    Integer operand = Integer.parseInt(arg);
+                    elements.add(new Constant(operand.doubleValue()));
+                } catch (IllegalArgumentException e) {
+                    // assume it is a cell reference or fail
+                    CellReference reference = CellUtil.parse(arg);
+                    elements.add(reference);
                 }
+            }
+        }
 
-                Double right = stack.pop();
-                Double left = stack.pop();
-                double result = operator.apply(left, right);
+        return elements;
+    }
 
-                stack.push(result);
+    public double evaluate(List<ExpressionElement> parsedExpression) {
+        Stack<Double> stack = new Stack<>();
+
+        for (ExpressionElement el : parsedExpression) {
+            if (!el.isOperator()) {
+                stack.push(el.getValue());
+            } else {
+                if (el instanceof Operator) {
+                    Double right = stack.pop();
+                    Double left = stack.pop();
+                    double result = ((Operator)el).apply(left, right);
+
+                    stack.push(result);
+                } else {
+                    throw BadException.die("Unsupported operator class: " + el.getClass());
+                }
             }
         }
 
         return stack.peek();
     }
 
+    public double evaluateSimple(String expression) {
+        return evaluate(parseExpression(expression));
+    }
 }
