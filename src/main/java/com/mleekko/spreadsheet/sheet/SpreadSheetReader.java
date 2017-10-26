@@ -1,4 +1,4 @@
-package com.mleekko.spreadsheet;
+package com.mleekko.spreadsheet.sheet;
 
 import com.mleekko.spreadsheet.ex.BadException;
 import com.mleekko.spreadsheet.util.InputUtil;

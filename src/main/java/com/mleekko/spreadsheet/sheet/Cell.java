@@ -1,4 +1,4 @@
-package com.mleekko.spreadsheet;
+package com.mleekko.spreadsheet.sheet;
 
 import com.mleekko.spreadsheet.ex.CyclicReferenceException;
 import com.mleekko.spreadsheet.rpn.ExpressionElement;
@@ -32,7 +32,7 @@ public class Cell {
         for (ExpressionElement element : parsedExpression) {
             if (element.isReference()) {
                 if (element instanceof CellReference) {
-                    ((CellReference) element).resolve(sheet, resolutionChain);
+                    sheet.resolveReference(((CellReference) element), resolutionChain);
                 } else {
                     throw new Error("Unsupported reference class: " + element.getClass());
                 }

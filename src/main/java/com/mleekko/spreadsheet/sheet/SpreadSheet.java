@@ -1,10 +1,12 @@
-package com.mleekko.spreadsheet;
+package com.mleekko.spreadsheet.sheet;
 
 import com.mleekko.spreadsheet.ex.BadException;
 import com.mleekko.spreadsheet.rpn.ExpressionEvaluator;
+import com.mleekko.spreadsheet.rpn.element.CellReference;
 import com.mleekko.spreadsheet.util.CellUtil;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class SpreadSheet {
 
@@ -35,6 +37,14 @@ public class SpreadSheet {
     }
 
 
+    public void forEachCell(Consumer<Cell> cellConsumer) {
+        for (Cell[] row : cells) {
+            for (Cell cell : row) {
+                cellConsumer.accept(cell);
+            }
+        }
+    }
+
     public void resolve() {
         for (int m = 0; m < cells.length; m++) {
             Cell[] row = cells[m];
@@ -50,27 +60,23 @@ public class SpreadSheet {
         }
     }
 
-
-    public String asString() {
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(cells.length).append('\n');
-        sb.append(cells[0].length).append('\n');
-
-        for (Cell[] row : cells) {
-            for (Cell cell : row) {
-                sb.append(format(cell.getValue())).append('\n');
-            }
+    void resolveReference(CellReference reference, Set<String> resolutionChain) {
+        if (reference.isResolved()) {
+            return;
         }
-        return sb.toString();
-    }
 
-    private static String format(double value) {
-        Formatter formatter = new Formatter(new Locale("en", "US"));
-        return formatter.format("%.5f", value).toString();
-    }
+        if (reference.column >= width) {
+            throw BadException.die("Column number exceeds spreadsheet's bounds: " + reference.getName());
+        }
+        if (reference.row >= height) {
+            throw BadException.die("Row exceeds spreadsheet's bounds: " + reference.getName());
+        }
 
+        Cell cell = getCell(reference.row, reference.column);
+        cell.resolveValue(this, resolutionChain, reference.getName());
+
+        reference.setValue(cell.getValue());
+    }
 
     @Override
     public String toString() {
@@ -82,5 +88,4 @@ public class SpreadSheet {
 
         return sb.toString();
     }
-
 }

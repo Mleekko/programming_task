@@ -2,6 +2,9 @@ package com.mleekko.spreadsheet;
 
 import com.mleekko.spreadsheet.ex.BadException;
 import com.mleekko.spreadsheet.ex.CyclicReferenceException;
+import com.mleekko.spreadsheet.sheet.SpreadSheet;
+import com.mleekko.spreadsheet.sheet.SpreadSheetReader;
+import com.mleekko.spreadsheet.sheet.SpreadSheetWriter;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -92,16 +95,17 @@ public class SpreadSheetTest {
                 "39 B1 B2 * /\n");
 
         sheet.resolve();
+        SpreadSheetWriter writer = new SpreadSheetWriter();
 
         assertEquals("" +
-                "2\n" +
                 "3\n" +
+                "2\n" +
                 "20.00000\n" +
                 "20.00000\n" +
                 "20.00000\n" +
                 "8.66667\n" +
                 "3.00000\n" +
-                "1.50000\n", sheet.asString());
+                "1.50000\n", writer.asString(sheet));
     }
 
 
